@@ -2,9 +2,10 @@
   "name": "connecto-api",
   "version": "1.0.0",
   "description": "backend for connecto app that used for authentication and managing connections",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
   },
   "repository": {
     "type": "git",

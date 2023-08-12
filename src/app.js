@@ -4,7 +4,8 @@ const cors = require("cors");
 
 const loginRouter = require("./routes/login");
 const signupRouter = require("./routes/signup");
-const myConnectionsRouter = require("./routes/my_connections");
+const connectionsRouter = require("./routes/connections");
+const profileRouter = require("./routes/profile");
 
 const { PORT } = require("./utilities/get_env");
 const { initRedis } = require("./utilities/redis");
@@ -28,9 +29,10 @@ const corsOptions = {};
 app.use(cors(corsOptions));
 
 // -------------------------ROUTES
-app.use("/api/auth/login", loginRouter);
-app.use("/api/auth/signup", signupRouter);
-app.use("/api/myConnections", myConnectionsRouter);
+app.use("/api/auth/login/", loginRouter);
+app.use("/api/auth/signup/", signupRouter);
+app.use("/api/connections/", connectionsRouter);
+app.use("/api/profile/", profileRouter);
 
 // -------------------------MONGO DB CONNECTION
 initMongo();

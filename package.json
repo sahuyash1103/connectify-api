@@ -1,0 +1,29 @@
+{
+  "name": "connecto-api",
+  "version": "1.0.0",
+  "description": "backend for connecto app that used for authentication and managing connections",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sahuyash1103/connecto-api.git"
+  },
+  "author": "sahuyash1103@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sahuyash1103/connecto-api/issues"
+  },
+  "homepage": "https://github.com/sahuyash1103/connecto-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.4.3",
+    "passport": "^0.6.0",
+    "redis": "^4.6.7"
+  }
+}

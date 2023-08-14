@@ -22,11 +22,19 @@ checkEnvironmentVariable();
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// app.use(header);
 
 // -------------------------CORS
-const corsOptions = {};
-
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: "*",
+    methods: "*",
+    allowedHeaders: "*",
+    exposedHeaders: "*",
+  })
+);
 
 // -------------------------ROUTES
 app.use("/api/auth/login/", loginRouter);
@@ -39,7 +47,7 @@ initMongo();
 
 // -------------------------API CONNECTION CHECK
 app.get("/api/", (req, res) => {
-  res.send("connecto api is working fine").status(200);
+  res.send("connectify api is working fine").status(200);
   // console.log("connection check");
 });
 

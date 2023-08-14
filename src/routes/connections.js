@@ -4,6 +4,7 @@ const User = require("../mongo/models");
 const { getORsetRedis } = require("../utilities/redis");
 const { auth } = require("../middlewares/authenticate");
 const { setExRedis } = require("../utilities/redis");
+const _ = require("lodash");
 
 router.get("/all", auth, async (req, res) => {
   let users = await User.find({});
@@ -15,7 +16,17 @@ router.get("/my", auth, async (req, res) => {
   let user = await getORsetRedis(req.user.email, () => {
     return User.findOne({ email: req.user.email });
   });
+  let connections = [];
+  user.connections.map(async (email) => {
+    let connection = await getORsetRedis(email, () => {
+      return User.findOne({ email: email });
+    });
+    // ! connections are not showing up in time
+    console.log(connection);
+    connections.push(connection);
+  });
 
+  console.log("CONNECTIONS", connections);
   res.json(user.connections).status(200);
 });
 

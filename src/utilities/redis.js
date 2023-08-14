@@ -16,7 +16,8 @@ function getORsetRedis(key, cb) {
   return new Promise(async (resolve, reject) => {
     let value = await redisClient.get(key);
 
-    if (value) {
+    // ! redis is not working
+    if (value != null) {
       return resolve(JSON.parse(value));
     }
 

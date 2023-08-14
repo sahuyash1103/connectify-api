@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
   const token = user.genrateAuthToken();
   res
     .header("x-auth-token", token)
-    .json(_.pick(user, ["name", "email", "phone", "skills", "education"]))
+    .json(_.pick(user, ["name", "email", "phone", "skills", "education", "about"]))
     .status(200);
 });
 

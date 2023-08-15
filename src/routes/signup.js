@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
 });
 
 async function validateSignupData(user) {
-  maxYear = new Date().getFullYear();
+  let maxYear = new Date().getFullYear();
 
   const schema = joi.object({
     name: joi.string().min(3).max(50).required(),

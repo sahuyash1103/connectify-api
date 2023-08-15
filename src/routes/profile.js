@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../mongo/models");
 const { getORsetRedis, setExRedis } = require("../utilities/redis");
 const { auth } = require("../middlewares/authenticate");
+const joi = require("joi");
 const _ = require("lodash");
 
 router.get("/", auth, async (req, res) => {
@@ -18,8 +19,8 @@ router.get("/", auth, async (req, res) => {
 });
 
 router.put("/update", auth, async (req, res) => {
-  const error = validateUpdateBody(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  const error = await validateUserUpdateData(req.body);
+  if (error) return res.status(400).send(error);
 
   const toUpdate = req.body;
 
@@ -35,8 +36,8 @@ router.put("/update", auth, async (req, res) => {
     .status(200);
 });
 
-async function validateUpdateBody(user) {
-  maxYear = new Date().getFullYear();
+async function validateUserUpdateData(dataToUpdate) {
+  let maxYear = new Date().getFullYear();
 
   const schema = joi.object({
     name: joi.string().min(3).max(50),
@@ -44,6 +45,7 @@ async function validateUpdateBody(user) {
     password: joi.string().min(8).max(255),
     phone: joi.string().min(10).max(10),
     skills: joi.array().items(joi.string().min(3).max(10)),
+    about: joi.string().max(255),
     education: joi.array().items(
       joi.object({
         institute: joi.string().min(3).max(50),
@@ -55,7 +57,7 @@ async function validateUpdateBody(user) {
   });
 
   try {
-    await schema.validateAsync(user);
+    await schema.validateAsync(dataToUpdate);
   } catch (err) {
     return err;
   }

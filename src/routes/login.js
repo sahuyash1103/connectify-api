@@ -7,7 +7,7 @@ const User = require("../mongo/models");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const error = await validateLoginBody(req.body);
+  const error = await validateLoginData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await getORsetRedis(req.body.email, () => {
@@ -28,9 +28,7 @@ router.post("/", async (req, res) => {
     .status(200);
 });
 
-async function validateLoginBody(user) {
-  maxYear = new Date().getFullYear();
-
+async function validateLoginData(user) {
   const schema = joi.object({
     email: joi.string().min(10).max(255).required().email(),
     password: joi.string().min(8).max(255).required(),

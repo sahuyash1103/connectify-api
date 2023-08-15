@@ -16,17 +16,8 @@ router.get("/my", auth, async (req, res) => {
   let user = await getORsetRedis(req.user.email, () => {
     return User.findOne({ email: req.user.email });
   });
-  let connections = [];
-  user.connections.map(async (email) => {
-    let connection = await getORsetRedis(email, () => {
-      return User.findOne({ email: email });
-    });
-    // ! connections are not showing up in time
-    console.log(connection);
-    connections.push(connection);
-  });
+  if (!user) return res.status(400).send("User not found.");
 
-  console.log("CONNECTIONS", connections);
   res.json(user.connections).status(200);
 });
 
@@ -34,6 +25,7 @@ router.put("/connect/", auth, async (req, res) => {
   let user = await getORsetRedis(req.user.email, () => {
     return User.findOne({ email: req.user.email });
   });
+  if (!user) return res.status(400).send("User not found.");
 
   const emailToConnect = req.body.emailToConnect;
 
@@ -43,16 +35,53 @@ router.put("/connect/", auth, async (req, res) => {
 
   if (!userToConnect) return res.status(400).send("User not found.");
 
-  if (userToConnect.email === user.email)
+  if (emailToConnect === user.email)
     return res.status(400).send("You can't connect to yourself.");
 
-  if (user.connections.includes(userToConnect.email))
+  if (user.connections.includes(emailToConnect))
     return res.status(400).send("You are already connected to this user.");
 
-  user.connections.push(userToConnect.email);
+  user.connections.push(emailToConnect);
 
-  await user.save();
-  user.setRedis();
+  await User.updateOne(
+    { email: user.email },
+    { connections: user.connections }
+  );
+  setExRedis(user.email, user);
+
+  user = await User.findOne({ email: req.user.email });
+
+  res.json(user.connections).status(200);
+});
+
+router.delete("/disconnect/", auth, async (req, res) => {
+  let user = await getORsetRedis(req.user.email, () => {
+    return User.findOne({ email: req.user.email });
+  });
+  if (!user) return res.status(400).send("User not found.");
+
+  const emailToDisconnect = req.body.emailToDisconnect;
+
+  let userToDisconnect = await getORsetRedis(emailToDisconnect, () => {
+    return User.findOne({ email: emailToDisconnect });
+  });
+
+  if (!userToDisconnect) return res.status(400).send("User not found.");
+
+  if (emailToDisconnect === user.email)
+    return res.status(400).send("You can't connect to yourself.");
+
+  if (!user.connections.includes(emailToDisconnect))
+    return res.status(400).send("You are already disconnected to this user.");
+
+  let index = user.connections.indexOf(emailToDisconnect);
+  user.connections.splice(index, 1);
+
+  await User.updateOne(
+    { email: user.email },
+    { connections: user.connections }
+  );
+  setExRedis(user.email, user);
 
   res.json(user.connections).status(200);
 });

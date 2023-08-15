@@ -1,6 +1,7 @@
 const redis = require("redis");
 
 const { REDIS_URI, REDIS_EXP_TIME } = require("./get_env");
+const User = require("../mongo/models");
 
 const redisClient = redis.createClient(REDIS_URI);
 
@@ -18,7 +19,7 @@ function getORsetRedis(key, cb) {
 
     // ! redis is not working
     if (value != null) {
-      return resolve(JSON.parse(value));
+      return resolve(User(JSON.parse(value)));
     }
 
     const newData = await cb();
@@ -27,9 +28,9 @@ function getORsetRedis(key, cb) {
   });
 }
 
-function setExRedis(key, value, time = REDIS_EXP_TIME) {
+function setExRedis(key, value, time) {
   if (!redisClient) return;
-  redisClient.setEx(key, time, JSON.stringify(value));
+  redisClient.setEx(key, time || REDIS_EXP_TIME, JSON.stringify(value));
   console.log("redis set");
 }
 
@@ -38,4 +39,4 @@ function getExRedis(key) {
   return JSON.parse(redisClient.get(key));
 }
 
-module.exports = { getORsetRedis, initRedis, setExRedis, getExRedis };
+module.exports = { getORsetRedis, initRedis, setExRedis, getExRedis, redisClient };

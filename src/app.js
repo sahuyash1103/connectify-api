@@ -48,7 +48,6 @@ initMongo();
 // -------------------------API CONNECTION CHECK
 app.get("/api/", (req, res) => {
   res.send("connectify api is working fine").status(200);
-  // console.log("connection check");
 });
 
 // -------------------------PORT LISTENING

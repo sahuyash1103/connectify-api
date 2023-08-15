@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { JWT_PRIVATE_KEY } = require("../utilities/get_env");
-const { setExRedis } = require("../utilities/redis");
 
 const educationSchema = new mongoose.Schema({
   institute: {
@@ -47,7 +46,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true, minlength: 5, maxlength: 1024 },
   phone: { type: String, required: true, minlength: 10, maxlength: 10 },
   skills: { type: [String], required: false },
-  about: { type: String, required: false, minlength: 3, maxlength: 255 },
+  about: { type: String, required: false, maxlength: 255 },
   education: {
     type: [educationSchema],
     required: false,
@@ -66,10 +65,6 @@ userSchema.methods.genrateAuthToken = function () {
     JWT_PRIVATE_KEY,
     { expiresIn: "24h" }
   );
-};
-
-userSchema.methods.setRedis = function () {
-  setExRedis(this.email, this);
 };
 
 const User = mongoose.model("Users", userSchema);

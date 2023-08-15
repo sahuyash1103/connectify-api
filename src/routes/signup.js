@@ -9,7 +9,7 @@ const User = require("../mongo/models");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const error = await validateSignupBody(req.body);
+  const error = await validateSignupData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await getORsetRedis(req.body.email, () => {
@@ -36,11 +36,13 @@ router.post("/", async (req, res) => {
   const token = user.genrateAuthToken();
   res
     .header("x-auth-token", token)
-    .json(_.pick(user, ["name", "email", "phone", "skills", "education", "about"]))
+    .json(
+      _.pick(user, ["name", "email", "phone", "skills", "education", "about"])
+    )
     .status(200);
 });
 
-async function validateSignupBody(user) {
+async function validateSignupData(user) {
   maxYear = new Date().getFullYear();
 
   const schema = joi.object({
@@ -48,8 +50,8 @@ async function validateSignupBody(user) {
     email: joi.string().min(10).max(255).required().email(),
     password: joi.string().min(8).max(255).required(),
     phone: joi.string().min(10).max(10).required(),
-    about: joi.string().min(3).max(255),
-    skills: joi.array().items(joi.string().min(3).max(10)),
+    about: joi.string().max(255),
+    skills: joi.array().items(joi.string().max(10)),
     education: joi.array().items(
       joi.object({
         institute: joi.string().min(3).max(50).required(),

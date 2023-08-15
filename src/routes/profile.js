@@ -3,31 +3,36 @@ const router = express.Router();
 const User = require("../mongo/models");
 const { getORsetRedis, setExRedis } = require("../utilities/redis");
 const { auth } = require("../middlewares/authenticate");
+const _ = require("lodash");
 
 router.get("/", auth, async (req, res) => {
   let user = await getORsetRedis(req.user.email, () => {
     return User.findOne({ email: req.user.email });
   });
 
-  res.json(user).status(200);
+  res
+    .json(
+      _.pick(user, ["name", "email", "phone", "skills", "education", "about"])
+    )
+    .status(200);
 });
 
 router.put("/update", auth, async (req, res) => {
   const error = validateUpdateBody(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let user = await getORsetRedis(req.user.email, () => {
-    return User.findOne({ email: req.user.email });
-  });
-
   const toUpdate = req.body;
 
   await User.updateOne({ email: req.user.email }, toUpdate);
 
-  user = await User.findOne({ email: req.user.email });
-  user.setRedis();
+  let user = await User.findOne({ email: req.user.email });
+  setExRedis(user.email, user);
 
-  res.json(user).status(200);
+  res
+    .json(
+      _.pick(user, ["name", "email", "phone", "skills", "education", "about"])
+    )
+    .status(200);
 });
 
 async function validateUpdateBody(user) {

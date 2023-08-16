@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   password: { type: String, required: true, minlength: 5, maxlength: 1024 },
-  phone: { type: String, required: true, minlength: 10, maxlength: 10 },
+  phone: { type: Number, required: true, minlength: 10, maxlength: 10 },
   skills: { type: [String], required: false },
   about: { type: String, required: false, maxlength: 255 },
   education: {

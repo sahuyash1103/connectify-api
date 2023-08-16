@@ -17,12 +17,13 @@ function getORsetRedis(key, cb) {
   return new Promise(async (resolve, reject) => {
     let value = await redisClient.get(key);
 
-    // ! redis is not working
-    if (value != null) {
-      return resolve(User(JSON.parse(value)));
-    }
+    // if (value != null) {
+    //   console.log("value", value);
+    //   return resolve(User(JSON.parse(value)));
+    // }
 
     const newData = await cb();
+    // console.log("newData", newData);
     redisClient.setEx(key, REDIS_EXP_TIME, JSON.stringify(newData));
     return resolve(newData);
   });
@@ -31,7 +32,6 @@ function getORsetRedis(key, cb) {
 function setExRedis(key, value, time) {
   if (!redisClient) return;
   redisClient.setEx(key, time || REDIS_EXP_TIME, JSON.stringify(value));
-  console.log("redis set");
 }
 
 function getExRedis(key) {
@@ -39,4 +39,10 @@ function getExRedis(key) {
   return JSON.parse(redisClient.get(key));
 }
 
-module.exports = { getORsetRedis, initRedis, setExRedis, getExRedis, redisClient };
+module.exports = {
+  getORsetRedis,
+  initRedis,
+  setExRedis,
+  getExRedis,
+  redisClient,
+};

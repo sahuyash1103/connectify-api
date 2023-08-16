@@ -1,10 +1,10 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const joi = require("joi");
-const _ = require("lodash");
-const { getORsetRedis } = require("../utilities/redis");
 const User = require("../mongo/models");
 const router = express.Router();
+const { validateLoginData } = require("../utilities/validators");
+const { getORsetRedis } = require("../utilities/redis");
+const _ = require("lodash");
 
 router.post("/", async (req, res) => {
   const error = await validateLoginData(req.body);
@@ -24,21 +24,10 @@ router.post("/", async (req, res) => {
   const token = user.genrateAuthToken();
   res
     .header("x-auth-token", token)
-    .json(_.pick(user, ["name", "email", "phone", "skills", "education", "about"]))
+    .json(
+      _.pick(user, ["name", "email", "phone", "skills", "education", "about"])
+    )
     .status(200);
 });
-
-async function validateLoginData(user) {
-  const schema = joi.object({
-    email: joi.string().min(10).max(255).required().email(),
-    password: joi.string().min(8).max(255).required(),
-  });
-
-  try {
-    await schema.validateAsync(user);
-  } catch (err) {
-    return err;
-  }
-}
 
 module.exports = router;

@@ -11,7 +11,7 @@ router.get("/all", auth, async (req, res) => {
 });
 
 router.get("/my", auth, async (req, res) => {
-  let user = User.findOne({ email: req.user.email });
+  let user = await User.findOne({ email: req.user.email });
   if (!user) return res.status(400).send("User not found.");
 
   res.json(user.connections).status(200);

@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../mongo/models");
-const { getORsetRedis } = require("../utilities/redis");
 const { auth } = require("../middlewares/authenticate");
-const { setExRedis } = require("../utilities/redis");
 const _ = require("lodash");
 
 router.get("/all", auth, async (req, res) => {
@@ -13,25 +11,19 @@ router.get("/all", auth, async (req, res) => {
 });
 
 router.get("/my", auth, async (req, res) => {
-  let user = await getORsetRedis(req.user.email, () => {
-    return User.findOne({ email: req.user.email });
-  });
+  let user = User.findOne({ email: req.user.email });
   if (!user) return res.status(400).send("User not found.");
 
   res.json(user.connections).status(200);
 });
 
 router.put("/connect/", auth, async (req, res) => {
-  let user = await getORsetRedis(req.user.email, () => {
-    return User.findOne({ email: req.user.email });
-  });
+  let user = await User.findOne({ email: req.user.email });
   if (!user) return res.status(400).send("User not found.");
 
   const emailToConnect = req.body.emailToConnect;
 
-  let userToConnect = await getORsetRedis(emailToConnect, () => {
-    return User.findOne({ email: emailToConnect });
-  });
+  let userToConnect = await User.findOne({ email: emailToConnect });
 
   if (!userToConnect) return res.status(400).send("User not found.");
 
@@ -47,7 +39,6 @@ router.put("/connect/", auth, async (req, res) => {
     { email: user.email },
     { connections: user.connections }
   );
-  setExRedis(user.email, user);
 
   user = await User.findOne({ email: req.user.email });
 
@@ -55,16 +46,12 @@ router.put("/connect/", auth, async (req, res) => {
 });
 
 router.delete("/disconnect/", auth, async (req, res) => {
-  let user = await getORsetRedis(req.user.email, () => {
-    return User.findOne({ email: req.user.email });
-  });
+  let user = await User.findOne({ email: req.user.email });
   if (!user) return res.status(400).send("User not found.");
 
   const emailToDisconnect = req.body.emailToDisconnect;
 
-  let userToDisconnect = await getORsetRedis(emailToDisconnect, () => {
-    return User.findOne({ email: emailToDisconnect });
-  });
+  let userToDisconnect = await User.findOne({ email: emailToDisconnect });
 
   if (!userToDisconnect) return res.status(400).send("User not found.");
 
@@ -81,7 +68,6 @@ router.delete("/disconnect/", auth, async (req, res) => {
     { email: user.email },
     { connections: user.connections }
   );
-  setExRedis(user.email, user);
 
   res.json(user.connections).status(200);
 });

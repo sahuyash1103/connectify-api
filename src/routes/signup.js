@@ -2,7 +2,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
-const { getORsetRedis } = require("../utilities/redis");
 const { validateSignupData } = require("../utilities/validators");
 const User = require("../mongo/models");
 const router = express.Router();
@@ -11,9 +10,7 @@ router.post("/", async (req, res) => {
   const error = await validateSignupData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let user = await getORsetRedis(req.body.email, () => {
-    return User.findOne({ email: req.body.email });
-  });
+  let user = await User.findOne({ email: req.body.email });
 
   if (user) return res.status(400).send("User already registered.");
 

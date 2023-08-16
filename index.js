@@ -8,12 +8,8 @@ const connectionsRouter = require("./src/routes/connections");
 const profileRouter = require("./src/routes/profile");
 
 const { PORT } = require("./src/utilities/get_env");
-const { initRedis } = require("./src/utilities/redis");
 const { checkEnvironmentVariable } = require("./src/utilities/check_env_var");
 const { initMongo } = require("./src/mongo/mongo");
-
-// -----------------------------------REDIS CONNECTION
-initRedis();
 
 //-----------------------------------CHECKING ENV VARIABLES
 const envVariableError = checkEnvironmentVariable();

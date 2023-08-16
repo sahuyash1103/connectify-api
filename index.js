@@ -16,15 +16,13 @@ const { initMongo } = require("./src/mongo/mongo");
 initRedis();
 
 //-----------------------------------CHECKING ENV VARIABLES
-checkEnvironmentVariable();
+const envVariableError = checkEnvironmentVariable();
 
 // -------------------------MIDDLEWARES
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// app.use(header);
 
 // -------------------------CORS
 app.use(
@@ -47,11 +45,15 @@ initMongo();
 
 // -------------------------API CONNECTION CHECK
 app.get("/", (req, res) => {
-  res.send("connectify api is runing...").status(200);
+  res
+    .json({ message: "connectify api is runing... ", error: envVariableError })
+    .status(200);
 });
 
 app.get("/api/", (req, res) => {
-  res.send("connectify api is runing...").status(200);
+  res
+    .json({ message: "connectify api is runing... ", error: envVariableError })
+    .status(200);
 });
 
 // -------------------------PORT LISTENING

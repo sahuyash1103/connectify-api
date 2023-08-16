@@ -2,15 +2,15 @@
 const express = require("express");
 const cors = require("cors");
 
-const loginRouter = require("./routes/login");
-const signupRouter = require("./routes/signup");
-const connectionsRouter = require("./routes/connections");
-const profileRouter = require("./routes/profile");
+const loginRouter = require("./src/routes/login");
+const signupRouter = require("./src/routes/signup");
+const connectionsRouter = require("./src/routes/connections");
+const profileRouter = require("./src/routes/profile");
 
-const { PORT } = require("./utilities/get_env");
-const { initRedis } = require("./utilities/redis");
-const { checkEnvironmentVariable } = require("./utilities/check_env_var");
-const { initMongo } = require("./mongo/mongo");
+const { PORT } = require("./src/utilities/get_env");
+const { initRedis } = require("./src/utilities/redis");
+const { checkEnvironmentVariable } = require("./src/utilities/check_env_var");
+const { initMongo } = require("./src/mongo/mongo");
 
 // -----------------------------------REDIS CONNECTION
 initRedis();

@@ -2,10 +2,10 @@
   "name": "connectify-api",
   "version": "1.0.0",
   "description": "backend for connectify app that used for authentication and managing connections",
-  "main": "src/app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/app.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

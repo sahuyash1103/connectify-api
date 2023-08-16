@@ -46,8 +46,12 @@ app.use("/api/profile/", profileRouter);
 initMongo();
 
 // -------------------------API CONNECTION CHECK
+app.get("/", (req, res) => {
+  res.send("connectify api is runing...").status(200);
+});
+
 app.get("/api/", (req, res) => {
-  res.send("connectify api is working fine").status(200);
+  res.send("connectify api is runing...").status(200);
 });
 
 // -------------------------PORT LISTENING

@@ -1,13 +1,19 @@
 const User = require("../mongo/models");
 const { createClient } = require("redis");
-const { REDIS_EXP_TIME, REDIS_URL } = require("./get_env");
+const { REDIS_EXP_TIME, REDIS_CLOUD_PASSWORD } = require("./get_env");
 
-const redisClient = createClient({ url: REDIS_URL });
+const redisClient = createClient( REDIS_CLOUD_PASSWORD && {
+    password: REDIS_CLOUD_PASSWORD,
+    socket: {
+        host: 'redis-10596.c264.ap-south-1-1.ec2.cloud.redislabs.com',
+        port: 10596
+    }
+});
 
 async function initRedis() {
     redisClient.on('error', err => console.log('Redis Client Error: ', err));
     redisClient.on('connect', () => {
-        if (REDIS_URL)
+        if (REDIS_CLOUD_PASSWORD)
             console.log('connected to Redis Server...[CLOUD]');
         else
             console.log('connected to Redis Server... [LOCAL]');

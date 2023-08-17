@@ -1,17 +1,22 @@
 // ---------------------------------IMPORTS
 const express = require("express");
 const bcrypt = require("bcrypt");
-const _ = require("lodash");
-const { validateSignupData } = require("../utilities/validators");
 const User = require("../mongo/models");
+const { validateSignupData } = require("../utilities/validators");
+const { getUserData, setExKey } = require("../utilities/redis-service");
+const _ = require("lodash");
+
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   const error = await validateSignupData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let user = await User.findOne({ email: req.body.email });
+  let result = await getUserData(req.body.email);
 
+  if (result.error) return res.status(400).send(`error from server side: ${result.error}`);
+
+  let user = result.data;
   if (user) return res.status(400).send("User already registered.");
 
   user = new User({
@@ -28,6 +33,7 @@ router.post("/", async (req, res) => {
   user.password = await bcrypt.hash(req.body.password, salt);
 
   await user.save();
+  await setExKey(user.email, user);
 
   const token = user.genrateAuthToken();
   res

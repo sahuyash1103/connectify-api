@@ -1,6 +1,7 @@
 //-------------------------IMPORTS
 const express = require("express");
 const cors = require("cors");
+var morgan = require('morgan')
 
 const loginRouter = require("./src/routes/login");
 const signupRouter = require("./src/routes/signup");
@@ -10,6 +11,7 @@ const profileRouter = require("./src/routes/profile");
 const { PORT } = require("./src/utilities/get_env");
 const { checkEnvironmentVariable } = require("./src/utilities/check_env_var");
 const { initMongo } = require("./src/mongo/mongo");
+const { initRedis } = require("./src/utilities/redis-service");
 
 //-----------------------------------CHECKING ENV VARIABLES
 const envVariableError = checkEnvironmentVariable();
@@ -19,6 +21,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 
 // -------------------------CORS
 app.use(
@@ -35,6 +38,9 @@ app.use("/api/auth/login/", loginRouter);
 app.use("/api/auth/signup/", signupRouter);
 app.use("/api/connections/", connectionsRouter);
 app.use("/api/profile/", profileRouter);
+
+// -------------------------REDIS CONNECTIONS
+initRedis();
 
 // -------------------------MONGO DB CONNECTION
 initMongo();

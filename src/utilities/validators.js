@@ -1,5 +1,7 @@
 const joi = require("joi");
 
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
 async function validateSignupData(user) {
   let maxYear = new Date().getFullYear();
 
@@ -7,7 +9,7 @@ async function validateSignupData(user) {
     name: joi.string().min(3).max(50).required(),
     email: joi.string().min(10).max(255).required().email(),
     password: joi.string().min(8).max(255).required(),
-    phone: joi.number().min(10).max(10).required(),
+    phone: joi.string().length(10).pattern(phoneRegExp).required(),
     about: joi.string().max(255),
     skills: joi.array().items(joi.string().max(10)),
     education: joi.array().items(
@@ -47,7 +49,7 @@ async function validateUserUpdateData(dataToUpdate) {
     name: joi.string().min(3).max(50),
     email: joi.string().min(10).max(255).email(),
     password: joi.string().min(8).max(255),
-    phone: joi.number().min(10).max(10),
+    phone: joi.string().length(10).pattern(phoneRegExp),
     skills: joi.array().items(joi.string().min(3).max(10)),
     about: joi.string().max(255),
     education: joi.array().items(

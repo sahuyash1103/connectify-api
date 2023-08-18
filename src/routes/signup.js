@@ -10,14 +10,14 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const error = await validateSignupData(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(401).send(error.details[0].message);
 
   let result = await getUserData(req.body.email);
 
-  if (result.error) return res.status(400).send(`error from server side: ${result.error}`);
+  if (result.error) return res.status(500).send(result.error);
 
   let user = result.data;
-  if (user) return res.status(400).send("User already registered.");
+  if (user) return res.status(200).send("User already registered.");
 
   user = new User({
     name: req.body.name,
